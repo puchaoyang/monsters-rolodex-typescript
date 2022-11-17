@@ -4,6 +4,7 @@ import CardList from './components/card-list/card-list.component';
 import SearchBox from './components/search-box/search-box.component';
 import './App.css';
 import { getData } from './utils/data-util';
+import { DropResult } from 'react-beautiful-dnd';
 export type Monster={
   id:string;
   name:string;
@@ -20,7 +21,6 @@ const App = () => {
       setMonsters(monsters);
     }
     getTempData()
-    // 将fetch的定义抽离
   }, []);
 
   useEffect(() => {
@@ -35,7 +35,19 @@ const App = () => {
     const searchFieldString = event.target.value.toLocaleLowerCase();
     setSearchField(searchFieldString);
   };
-
+  const sortMonster=(sortParams:DropResult)=>{
+    const {source,destination}= sortParams
+    if(destination){
+      const {index:sourceIndex} = source 
+      const {index:targetIndex} = destination
+      console.log('ge:',sourceIndex,targetIndex)
+      setFilterMonsters(pre=>{
+        const tempData=[...pre]
+        tempData.splice(targetIndex,-1,tempData.splice(sourceIndex,1)[0])
+        return tempData
+      })
+    }
+  }
   return (
     <div className='App'>
       <h1 className='app-title'>Monsters Rolodex</h1>
@@ -45,7 +57,7 @@ const App = () => {
         onChangeHandler={onSearchChange}
         placeholder='search monsters'
       />
-      <CardList monsters={filteredMonsters} />
+      <CardList monsters={filteredMonsters} sortMonster={sortMonster}/>
     </div>
   );
 };
